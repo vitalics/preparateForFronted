@@ -1,1 +1,3 @@
+OS:windows
+
 script: ./build/prepareEnvironment.bat
