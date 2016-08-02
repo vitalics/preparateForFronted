@@ -1,9 +1,9 @@
-﻿
-[string] $scriptDir = Split-Path $script:MyInvocation.MyCommand.Path;
+﻿[string] $scriptDir = Split-Path $script:MyInvocation.MyCommand.Path;
 Set-Location $scriptDir;
 
 [string]$programFiles;
 [string]$programFilesx86;
+
 if ([environment]::Is64BitOperatingSystem) {
     $programFilesx86 = "Program Files (x86)";
     $programFiles = "Program Files";
@@ -13,8 +13,10 @@ else
     $programFilesx86 ="Program Files";
     $programFiles = "Program Files";
 }
+
 [string] $VSInstalled = "C:\$programFilesx86\Microsoft Visual Studio 14.0\Common7\IDE\"
 [bool] $isVSInstalled = Test-Path $VSInstalled  -Filter .exe;
+
 if (-not $isVSInstalled) 
 {
     $VSInstalled = "C:\$programFilesx86\Microsoft Visual Studio 15.0\Common7\IDE\"
@@ -40,7 +42,6 @@ if (-not $isVSInstalled)
 [bool] $isTypescriptFolder = Test-Path $typescriptFolder;
 
 $arguments= ' /qn /l*v .\installers.txt';
-
 
 
 function Check-Install-Programs
@@ -117,7 +118,7 @@ function Path-Checker
     {
     $semicolon = ";";
 
-    $PathToFolder = $PathToFolder + $semicolon;
+    $PathToFolder += $semicolon;
 
     }
     Process
@@ -146,15 +147,9 @@ function Path-Checker
 function Cli-installers
 {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    [Alias()]
     Param
-    (
-    )
+    ()
 
-    Begin
-    {
-        
-    }
     Process
     {
     if($PSCmdlet.ShouldContinue("Do you want install gulp?","NPM manager")){
@@ -176,18 +171,49 @@ function Cli-installers
     }
 }
 
-Check-Install-Programs -PathToProgram $VSInstalled -pathToInstalledProgram 'VS2015.1.exe' -NameOfProgram "Visual Studio"
 
-Check-Install-Programs -PathToProgram $NodeInstalled -pathToInstalledProgram 'node-v4.4.7-x86.msi'-NameOfProgram "Node.js"
+function Main
+{
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    [Alias('p1')]
+    Param
+    (
+    )
 
-Check-Install-Programs -PathToProgram $PythonInstalled -pathToInstalledProgram 'python-2.7.11.msi'-NameOfProgram "Python"
+    Begin
+    {
+    }
+    Process
+    {
 
-Check-Install-Programs -PathToProgram $RubyInstalled -pathToInstalledProgram 'rubyinstaller-2.2.4.exe'-NameOfProgram "Ruby"
+        if ($PSCmdlet.ShouldContinue("Do you want to start web isntaller", 'web installer'))
+        {
+            Start-Process .\WebInstaller.ps1 -Wait
+        }
+        
 
-Cli-installers
+        Check-Install-Programs -PathToProgram $VSInstalled -pathToInstalledProgram 'VisualStudio community.exe' -NameOfProgram "Visual Studio"
 
-Path-Checker -PathToFolder $RubyInstalled -NameOfProgram 'ruby'
-Path-Checker -PathToFolder $typescriptFolder -NameOfProgram 'typescript'
+        Check-Install-Programs -PathToProgram $NodeInstalled -pathToInstalledProgram 'node-v4.4.7-x86.msi'-NameOfProgram "Node.js"
+
+        Check-Install-Programs -PathToProgram $PythonInstalled -pathToInstalledProgram 'python-2.7.12.msi'-NameOfProgram "Python"
+
+        Check-Install-Programs -PathToProgram $RubyInstalled -pathToInstalledProgram 'rubyinstaller-2.2.4.exe'-NameOfProgram "Ruby"
+
+        Check-Install-Programs -PathToProgram $typescriptFolder -pathToInstalledProgram 'TypeScript_Dev14Full.exe'-NameOfProgram "Typescript"
+
+        Cli-installers
+
+        Path-Checker -PathToFolder $RubyInstalled -NameOfProgram 'ruby'
+        Path-Checker -PathToFolder $typescriptFolder -NameOfProgram 'typescript'
+    }
+    End
+    {
+        Write-host "-------------------------------------"
+    }
+}
+
+Main
 
 Write-Host "Now start next script in your path with project";
-read-host;
+read-host "Press any key";
