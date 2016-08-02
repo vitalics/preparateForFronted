@@ -27,7 +27,8 @@ if (-not $isVSInstalled)
 [string] $NodeInstalled = "C:\$programFiles\nodejs\";
 [bool] $isNodeInstalled = Test-Path $NodeInstalled -Filter .exe;
 
-
+[string] $vscode = "C:\$programFilesx86\Microsoft VS Code";
+[bool] $isVsCodeInstalled = Test-path $vscode;
 
 [string] $RubyInstalled = "C:\Ruby22\bin";
 [bool] $isRubyInstalled = Test-Path $RubyInstalled;
@@ -175,7 +176,7 @@ function Cli-installers
 function Main
 {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    [Alias('p1')]
+    [Alias()]
     Param
     (
     )
@@ -190,7 +191,6 @@ function Main
         {
             Start-Process .\WebInstaller.ps1 -Wait
         }
-        
 
         Check-Install-Programs -PathToProgram $VSInstalled -pathToInstalledProgram 'VisualStudio community.exe' -NameOfProgram "Visual Studio"
 
@@ -201,6 +201,8 @@ function Main
         Check-Install-Programs -PathToProgram $RubyInstalled -pathToInstalledProgram 'rubyinstaller-2.2.4.exe'-NameOfProgram "Ruby"
 
         Check-Install-Programs -PathToProgram $typescriptFolder -pathToInstalledProgram 'TypeScript_Dev14Full.exe'-NameOfProgram "Typescript"
+
+        Check-Install-Programs -PathToProgram $vscode -pathToInstalledProgram 'vscode-stable.exe'-NameOfProgram "VsCode"
 
         Cli-installers
 
